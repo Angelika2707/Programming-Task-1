@@ -74,12 +74,13 @@ class SimplexMethod:
 
             leaving_vector_index = self.determine_leaving_vector(B_inv_P_j)
 
-            temp = self.non_basis[entering_vector_inx]
-            self.non_basis[entering_vector_inx] = self.B_indexes[leaving_vector_index]
+            entering_var_index = self.non_basis.index(entering_vector_inx)
+            temp = self.non_basis[entering_var_index]
+            self.non_basis[entering_var_index] = self.B_indexes[leaving_vector_index]
             self.B_indexes[leaving_vector_index] = temp
             self.B[:, leaving_vector_index] = self.A[:, entering_vector_inx]
             B_inversed = np.linalg.inv(self.B)
-            self.C_b[leaving_vector_index] = self.C[entering_vector_inx]
+            self.C_b[leaving_vector_index] = self.C[self.B_indexes[leaving_vector_index]]
 
     def find_basic_variables(self):
         for i in range(self.size[0]):

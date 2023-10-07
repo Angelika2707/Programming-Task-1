@@ -12,7 +12,7 @@ class UserInput:
 
     def collect_data(self):
         print("This program is designed to solve Linear Programming Problems (LPP) for both maximization "
-              "and minimization objectives")
+              "and minimization objectives.")
         self.input_type_of_problem()
         self.input_C()
         self.input_size()
@@ -22,7 +22,7 @@ class UserInput:
 
     def input_type_of_problem(self):
         print("Please specify whether you wish to solve a maximization or minimization problem "
-              "(Enter 'max' for maximization or 'min' for minimization)")
+              "(Enter 'max' for maximization or 'min' for minimization):")
         type_of_problem = input()
         if type_of_problem == "min":
             self.max_problem = False

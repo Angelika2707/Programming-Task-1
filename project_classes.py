@@ -9,24 +9,31 @@ class UserInput:
         self.a = None  # The approximation accuracy
         self.size = []
 
+    def collect_data(self):
+        self.input_size()
+        self.input_C()
+        self.input_A()
+        self.input_b()
+        self.input_a()
+
     def input_size(self):
-        self.size = list(map(int, input("Write size of matrix (ex: 4 5): ").split()))
+        self.size = list(map(int, input("Enter the size of matrix A (example: 4 5): ").split()))
 
     def input_C(self):
-        self.C = list(map(int, input("Write C (ex: 2 3 0 0 4): ").split()))
+        self.C = list(map(int, input("Enter vector C (ex: 2 3 0 0 4): ").split()))
 
     def input_A(self):
         self.A = []
-        print("Write A:\nex: 4 5 6\n    5 1 2")
+        print("Enter matrix A:\nexample: 4 5 6\n         5 1 2\n")
         for i in range(self.size[0]):
             line = list(map(int, input().split()))
             self.A.append(line)
 
     def input_b(self):
-        self.b = list(map(int, input("Write b: ").split()))
+        self.b = list(map(int, input("Enter vector b: ").split()))
 
     def input_a(self):
-        self.a = int(input("Write accuracy: "))
+        self.a = int(input("Enter approximation accuracy: "))
 
 
 class SimplexMethod:
@@ -40,18 +47,36 @@ class SimplexMethod:
         self.B_indexes = [0 for i in range(self.size[0])]  # indexes of basis
         self.X_b = np.zeros((1, self.size[0]))      # optimal solution vector
         self.z = 0  # optimal value
-        self.C_b = np.zeros((1, self.size[0]))  # values of non-basic variables in C
-        self.non_basis = [0] * (self.size[1] - self.size[0])    # A vector of non-basic variables
+        self.C_b = np.zeros((self.size[0]))  # values of non-basic variables in C
+        self.non_basis = [0] * (self.size[1] - self.size[0])    # A vector of non-basic variables (indexes)
 
-    def main(self):
+    def revised_simplex_method(self):
         self.find_basic_variables()
         self.find_non_basic_variables()
         B_inversed = np.linalg.inv(self.B)
-        entering_vector_inx = self.compute_optimality(B_inversed)
 
-        #algorithm
+        while True:
+            entering_vector_inx = self.compute_optimality(B_inversed)
 
-        # loop
+            if entering_vector_inx is None:
+                result = np.append([self.z], np.zeros(self.size[1]))
+                j = 0
+                for i in self.B_indexes:
+                    result[i + 1] = self.X_b[j]
+                    j += 1
+                return result
+
+            B_inv_P_j = B_inversed.dot(self.A[:, entering_vector_inx])
+
+            leaving_vector_index = self.determine_leaving_vector(B_inv_P_j)
+            if leaving_vector_index is None:
+                return None
+            self.B_indexes[leaving_vector_index] = entering_vector_inx
+            self.B[:, leaving_vector_index] = self.A[:, entering_vector_inx]
+            B_inversed = np.linalg.inv(self.B)
+            self.C_b[leaving_vector_index] = self.C[entering_vector_inx]
+            self.non_basis[entering_vector_inx] = len(self.non_basis) + entering_vector_inx - 1
+            self.B_indexes[leaving_vector_index] = entering_vector_inx
 
     def find_basic_variables(self):
         for i in range(self.size[0]):
@@ -82,20 +107,32 @@ class SimplexMethod:
         cur_size = self.size[1] - self.size[0]  # number of non-basic variables
         z = [0 for i in range(cur_size)]
         temp_product = self.C_b.dot(B_inversed)
-        flag = False
+        count = 0
         for i in range(cur_size):
             z[i] = temp_product.dot(self.A[:, self.non_basis[i]]) - self.C.transpose()[self.non_basis[i]]
             print(z[i])
             if z[i] >= 0:
-                flag = True
+                count += 1
 
-        if flag:
-            return
-            # deliver self.X_b and self.z to output
+        if count == cur_size:
+            return None
         else:
             min_neg_el = np.min(z)
             j = z.index(min_neg_el)  # index of entering vector Pj
             print(self.non_basis[j])
         return self.non_basis[j]
 
+    def determine_leaving_vector(self, B_inv_P_j):
+        min_ratio = float('inf')
+        leaving_vector_index = None
+
+        for i in range(self.size[0]):
+            if B_inv_P_j[i] != 0:
+                ratio = self.X_b[i] / B_inv_P_j[i]
+                if min_ratio > ratio > 0:
+                    min_ratio = ratio
+                    leaving_vector_index = i
+        if min_ratio == float('inf'):
+            return None
+        return leaving_vector_index
 

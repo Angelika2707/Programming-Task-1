@@ -3,7 +3,13 @@ from project_classes import UserInput, SimplexMethod
 
 def round_with_accuracy(value, accuracy):
     if abs(round(value) - value) <= accuracy:
-        return round(value)
+        if str(value)[-2:] == ".5":
+            if value > 0:
+                return int(value + 0.5)
+            elif value < 0:
+                return int(value - 0.5)
+        else:
+            return round(value)
     elif abs(value) <= accuracy:
         return 0
     else:

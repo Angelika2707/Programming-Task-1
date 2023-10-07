@@ -8,19 +8,32 @@ class UserInput:
         self.b = None  # A vector of right-hand side numbers
         self.a = None  # The approximation accuracy
         self.size = []
+        self.max_problem = True
 
     def collect_data(self):
-        self.input_size()
+        print("This program is designed to solve Linear Programming Problems (LPP) for both maximization "
+              "and minimization objectives")
+        self.input_type_of_problem()
         self.input_C()
+        self.input_size()
         self.input_A()
         self.input_b()
         self.input_a()
+
+    def input_type_of_problem(self):
+        print("Please specify whether you wish to solve a maximization or minimization problem "
+              "(Enter 'max' for maximization or 'min' for minimization)")
+        type_of_problem = input()
+        if type_of_problem == "min":
+            self.max_problem = False
 
     def input_size(self):
         self.size = list(map(int, input("Enter the size of matrix A (example: 4 5): ").split()))
 
     def input_C(self):
-        self.C = list(map(int, input("Enter vector C (ex: 2 3 0 0 4): ").split()))
+        self.C = list(map(int, input("Enter vector C (example: 2 3 4 0 0 0): ").split()))
+        if not self.max_problem:
+            self.C = [-c for c in self.C]
 
     def input_A(self):
         self.A = []
@@ -30,10 +43,10 @@ class UserInput:
             self.A.append(line)
 
     def input_b(self):
-        self.b = list(map(int, input("Enter vector b: ").split()))
+        self.b = list(map(int, input("Enter vector b (example: 11 34 20): ").split()))
 
     def input_a(self):
-        self.a = int(input("Enter approximation accuracy: "))
+        self.a = float(input("Enter approximation accuracy (example: 0.01): "))
 
 
 class SimplexMethod:

@@ -31,7 +31,7 @@ class UserInput:
         self.size = list(map(int, input("Enter the size of matrix A (example: 4 5): ").split()))
 
     def input_C(self):
-        self.C = list(map(int, input("Enter vector C (example: 2 3 4 0 0 0): ").split()))
+        self.C = list(map(float, input("Enter vector C (example: 2 3 4 0 0 0): ").split()))
         if not self.max_problem:
             self.C = [-c for c in self.C]
 
@@ -39,11 +39,11 @@ class UserInput:
         self.A = []
         print("Enter matrix A:\nexample: 4 5 6\n         5 1 2")
         for i in range(self.size[0]):
-            line = list(map(int, input().split()))
+            line = list(map(float, input().split()))
             self.A.append(line)
 
     def input_b(self):
-        self.b = list(map(int, input("Enter vector b (example: 11 34 20): ").split()))
+        self.b = list(map(float, input("Enter vector b (example: 11 34 20): ").split()))
 
     def input_a(self):
         self.a = float(input("Enter approximation accuracy (example: 0.01): "))
@@ -127,7 +127,6 @@ class SimplexMethod:
         count = 0
         for i in range(cur_size):
             z[i] = temp_product.dot(self.A[:, self.non_basis[i]]) - self.C.transpose()[self.non_basis[i]]
-            print(z[i])
             if z[i] >= 0:
                 count += 1
 
@@ -136,7 +135,6 @@ class SimplexMethod:
         else:
             min_neg_el = np.min(z)
             j = z.index(min_neg_el)  # index of entering vector Pj
-            print(self.non_basis[j])
         return self.non_basis[j]
 
     def determine_leaving_vector(self, B_inv_P_j):

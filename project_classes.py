@@ -52,11 +52,11 @@ class UserInput:
 class SimplexMethod:
     def __init__(self, size, C, A, b, a):
         self.size = size  # size of A
-        self.C = np.array(C)  # A vector of coefficients of objective function
-        self.A = np.array(A)  # A matrix of coefficients of constraint function
-        self.b = np.array(b)  # A vector of right-hand side numbers
-        self.a = np.array(a)  # The approximation accuracy.
-        self.B = np.array([[0 for j in range(self.size[0])] for i in range(self.size[0])])  # basis
+        self.C = np.array(C).astype(np.float64)  # A vector of coefficients of objective function
+        self.A = np.array(A).astype(np.float64)  # A matrix of coefficients of constraint function
+        self.b = np.array(b).astype(np.float64)  # A vector of right-hand side numbers
+        self.a = np.array(a).astype(np.float64)  # The approximation accuracy.
+        self.B = np.array([[0 for j in range(self.size[0])] for i in range(self.size[0])]).astype(np.float64)  # basis
         self.B_indexes = [0 for i in range(self.size[0])]  # indexes of basis
         self.X_b = np.zeros((1, self.size[0]))      # optimal solution vector
         self.z = 0  # optimal value
@@ -111,9 +111,6 @@ class SimplexMethod:
                 self.non_basis[j] = i
                 j += 1
 
-    # return index of entering vector P_j
-    # with new iteration basis B and indexes is changed
-    # elements in C also changed
     def compute_optimal_solution(self, B_inversed):
         b_transposed = self.b.transpose()
         self.X_b = (B_inversed.dot(b_transposed))
